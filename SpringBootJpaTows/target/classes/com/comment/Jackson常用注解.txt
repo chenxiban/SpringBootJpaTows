@@ -1,0 +1,11 @@
+@JsonIgnore作用在字段或方法上，用来完全忽略被注解的字段和方法对应的属性.
+@JsonProperty作用在字段或方法上，用来对属性的序列化/反序列化，可以用来避免遗漏属性，同时提供对属性名称重命名
+@JsonUnwrapped作用在属性字段或方法上，用来将子JSON对象的属性添加到封闭的JSON对象。
+@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss") 在实体字段上使用timezone="GMT+8" 这里是中国的时区 东8区 
+@JsonInclude(Include.NON_NULL) 
+//将该标记放在属性上，如果该属性为NULL则不参与序列化
+//如果放在类上边,那对这个类的全部属性起作用
+//Include.Include.ALWAYS 默认
+//Include.NON_DEFAULT 属性为默认值不序列化
+//Include.NON_EMPTY 属性为 空（“”） 或者为 NULL 都不序列化
+//Include.NON_NULL 属性为NULL 不序列化

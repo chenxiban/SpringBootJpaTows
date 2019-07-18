@@ -1,0 +1,109 @@
+*********************************  参数校验   *************************
+1.引人jar包
+2.配置文件中本地校验工厂中指定校验者,并启用该校验器
+3.实体的属性设置校验,并在实体参数前启用校验,实体参数后紧跟校验绑定结果对象
+4.页面使用表单标签errors显示校验失败信息
+*********************************  国际化   *************************
+1.配置读取国际化属性文件的的绑定信息资源类
+2.页面使用表单标签message显示国际化属性信息
+*********************************  参数校验实现国际化   *************************
+1.在本地校验工厂中指定 校验信息资源 使用国际化绑定信息资源 
+
+
+springMVC验证使用步骤：
+1、添加jar包：
+hibernate-validator-4.3.2.final.jar、
+jboss-logging-3.1.4.GA.jar、
+joda-time-2.8.2.jar、(DateTimeFormat注解使用,可选)
+validation-api-1.0.0.GA.jar
+
+
+<!-- 配置文件中本地校验工厂中指定校验者 -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<!-- 本地校验器 -->
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
+	    <!-- 如果不配置,则默认使用classpath下的 ValidationMessages_*_*.properties -->
+	    <!-- <property name="validationMessageSource" ref="messageSource"/>  -->
+	</bean>
+2、在实体类中需要验证的属性前添加验证规则注解：
+	public class News {
+	private int nid;
+	@Length(min=4,max=16)
+	private String title;
+	private String content;
+	@Past @DateTimeFormat(pattern="yyyy-MM-dd") @NotNull
+	private Date ptime;
+
+3、controller中使用注解进行验证：
+	@RequestMapping("/doAddNews")
+	public String addNews(@Valid @ModelAttribute("news")News news,BindingResult result,ModelMap model){
+		if(!result.hasErrors()){
+			model.addAttribute("news", news);
+			return showNews(news);
+		}else{			
+			return "addNews";
+		}
+	}
+4、页面中需要添加<sf:errors path="ptime"></sf:errors><br/>显示验证错误信息
+5、运行，测试
+
+
+springMVC中应用国际化步骤：
+1.修改 mvc-servlet.xml 配置文件， 新增消息资源 Bean：
+<bean id="messageSource" 
+ class="org.springframework.context.support.ReloadableResourceBundleMessageSource"> 
+  <property name="basenames"> 
+    <list> 
+      <value>/WEB-INF/messages</value> 
+      <value>/WEB-INF/labels</value> 
+    </list> 
+  </property> 
+  <property name="cacheSeconds" value="0"></property> 
+</bean> 
+
+2.在 WEB-INF 目录中，新建属性文件用于存放应用界面标签、提示信
+息等文本，包括 messages_en_US.properties、message_zh_CN.properties 属性文件。
+
+3.修改 ent_add.jsp 文件，所有标签文件均用标签库替换，如：<label><s:message code="ent.ent.name"/></label> 
+
+4.更改浏览器语言，刷新页面。
+
+二、自定义验证错误消息
+1.添加json相关的两个jar包
+2.修改 mvc-servlet.xml 配置文件,在本地校验工厂中指定 校验信息资源 使用国际化绑定信息资源 
+<bean id="validator" 
+    class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+  <property name="validationMessageSource" ref="messageSource"></property>
+</bean> 
+
+<mvc:annotation-driven validator="validator">
+</mvc:annotation-driven> 
+
+3.在 WEB-INF 目录中，新建属性文件用于存放验证失败报错信息，包括 labels.zh_CN.properties、labels.en_US.properties。
+4.修改 Enterprise 实体的验证注解，如 
+/*省略其它代码*/ 
+@Length(min = 5, max = 50,message="{valid.ent.ent_name.length}") 
+private String ent_name; 
+@NotNull(message="{valid.ent.fnd_date.notnull}") 
+@Past(message="{valid.ent.fnd_date.past}") 
+@DateTimeFormat(pattern = "yyyy/MM/dd") 
+private Date fnd_date;
+
+5.运行测试
+
+spring:message 对应org.springframework.web.servlet.tags.MessageTag标记库处理类
+　　这个标记用来帮助springframework支持国际化。和JSTL的fmt:message标记类似。当然这个标记可以很好的工作的本地的springframework框架下。
+　　属性如下：
+　　code：不是必需的。用来查找message,如果没有被使用的话，text将被使用。
+　　text：不是必需的。假如code不存在的话，默认是text输出。当code和text都没有设置的话，标记将输出为null.
+　　var：不是必需的。这个字符串被用来绑定输出结果到page，request, session或application scope.默认情况输出到jsp中。
+　　scope：不是必需的。前提条件var必须设置的情况下。它的值可以是page，request, session或application。
+
+
+关于FormattingConversionServiceFactoryBean与ConversionServiceFactoryBean的比较：
+    ConversionService：只有数据转换功能；
+    ConversionServiceFactoryBean：与ConversionService对应；
+    FormattingConversionService：具有数据转换和数据格式化功能；
+    FormattingConversionServiceFactoryBean：与FormattingConversionService对应；可以注册自定义的转换器，又可以注册自定义的注解驱动器逻辑。
+<mvc:annotation-driven/>标签内部默认创建的conversionService实例就是一个FormattingConversionServiceFactoryBean；
+装配完FormattingConversionServiceFactoryBean后，Spring MVC对处理方法的入参绑定就支持注解驱动的功能了。

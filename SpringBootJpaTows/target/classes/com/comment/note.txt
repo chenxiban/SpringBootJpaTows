@@ -1,0 +1,11 @@
+************** SpringBoot集成JPA(Hibernate)步骤(2步): *************
+1.在POM文件中添加JPA依赖
+spring-boot-starter-data-jpa
+mysql-connector-java
+2.在项目配置文件application.properties中配置数据源,JPA项,Hibernate动作
+3.编写 dao 层和 entity 的代码
+dao接口继承JpaRepository接口
+使用javax.persistence.Entity或者javax.persistence.Table注解清楚与关系型数据库的映射
+4.在主模块上使用@EnableJpaRepositories和@EntityScan扫描Jpa接口及实体类.
+@org.springframework.data.jpa.repository.config.EnableJpaRepositories(basePackages = "org.spring.springboot.dao")
+@org.springframework.boot.autoconfigure.domain.EntityScan(basePackages = "org.spring.springboot.entity")

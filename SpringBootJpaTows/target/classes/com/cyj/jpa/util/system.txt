@@ -1,0 +1,16 @@
+一> 权限管理模块示例(常规五表权限需要写死操作.完整七表权限操作可自定义)
+图解:(权限管理模块表关系.xlsx)
+需要实现的组件
+1.基本的用户,角色,页面,操作按钮  七表CRUD操作
+2.配合权限,身份验证的拦截器
+(拦截器设计时需要清楚1.哪些资源交给了DispatcherServlet,2.哪些资源是SpringMVC静态资源,3,哪些资源是不需要被拦截的)
+
+本示例项目中有关的文件有:
+classpath:com/ysd/comment/system.txt 总结笔记
+classpath:com.ysd.Entity.sys 包下所有实体类
+classpath:com.ysd.controller.sys 包下控制器
+classpath:com.ysd.interceptor.LoginInterceptor 身份权限识别拦截器
+/doc/权限管理模块表关系.xlsx
+/static/js/jquery-1.9.1.min.js
+/index.jsp 登录页面,设置 会话缓存sessionStorage 
+/sessionStorage.jsp 展示页面,使用 会话缓存sessionStorage 页面

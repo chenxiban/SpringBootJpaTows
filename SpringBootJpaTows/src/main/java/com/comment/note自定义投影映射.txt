@@ -1,0 +1,27 @@
+************** SpringBoot集成JPA(Hibernate)步骤(2步): *************
+1.在POM文件中添加JPA依赖
+spring-boot-starter-data-jpa
+mysql-connector-java
+2.在项目配置文件application.properties中配置数据源,JPA项,Hibernate动作
+3.编写 dao 层和 entity 的代码
+dao接口继承JpaRepository接口
+使用javax.persistence.Entity或者javax.persistence.Table注解清楚与关系型数据库的映射
+4.在主模块上使用@EnableJpaRepositories和@EntityScan扫描Jpa接口及实体类.
+@org.springframework.data.jpa.repository.config.EnableJpaRepositories(basePackages = "org.spring.springboot.dao")
+@org.springframework.boot.autoconfigure.domain.EntityScan(basePackages = "org.spring.springboot.entity")
+
+
+
+************** SpringJPA自定义投影映射实现步骤:需要2步实现 *************
+1. 定义任意的自定义接口,以get+[属性名]格式声明Getter抽象方法
+2. 在Repository层使用JPQL或者原生SQL形式定义查询操作抽象方法,
+联或不联表查询操作JPQL必须定义与[属性名]一致的别名
+抽象方法返回类型为第一步自定义接口类型的类或集合
+3. 调用Repository操作即可.
+
+************** 以上是官方使用接口实现自定义投影,它是映射到接口;我们还可以使用反射机制自己写自定义映射到实体类 *************
+1. 定义实体类, 在Repository层使用JPQL或者原生SQL形式定义查询操作抽象方法,
+抽象方法返回 对象数组集合 List<Object[]>  需要使用Java反射机制写成的工具类把 值数组转成对象.
+2. 之前写的值数组转实体类对象的工具类JpaObjectsToEntity.java
+
+
